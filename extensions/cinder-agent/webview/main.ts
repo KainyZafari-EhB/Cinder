@@ -20,6 +20,9 @@ window.addEventListener('message', (event: MessageEvent<HostMessage>) => {
 		case 'conversation':
 			chat?.show(message.state);
 			break;
+		case 'conversations':
+			chat?.showList(message.state);
+			break;
 		case 'upsert':
 			chat?.upsert(message.item);
 			break;

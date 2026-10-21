@@ -50,9 +50,19 @@ export interface ConversationState {
 	recent: ConversationSummary[];
 }
 
+/** The conversations of the project open in this window. */
+export interface ConversationListState {
+	projectName: string;
+	/** The conversation open in the chat view, if it has been saved yet. */
+	currentId?: string;
+	busy: boolean;
+	conversations: ConversationSummary[];
+}
+
 export type HostMessage =
 	| { type: 'home'; state: HomeState }
 	| { type: 'conversation'; state: ConversationState }
+	| { type: 'conversations'; state: ConversationListState }
 	| { type: 'upsert'; item: TranscriptItem }
 	| { type: 'appendText'; id: string; text: string }
 	| { type: 'busy'; busy: boolean }
@@ -70,4 +80,6 @@ export type ViewMessage =
 	| { type: 'setApiKey' }
 	| { type: 'pickFolder' }
 	| { type: 'newConversation' }
+	| { type: 'showConversations' }
+	| { type: 'toggleFullWidth' }
 	| { type: 'showHome' };

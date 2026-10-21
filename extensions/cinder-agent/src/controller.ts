@@ -102,6 +102,12 @@ export class Controller implements vscode.Disposable, vscode.TextDocumentContent
 			case 'newConversation':
 				await this.newConversation();
 				break;
+			case 'showConversations':
+				await this.postConversationList();
+				break;
+			case 'toggleFullWidth':
+				await this.runLayoutCommand('workbench.action.toggleMaximizedAuxiliaryBar');
+				break;
 			case 'showHome':
 				this.showHome();
 				break;
@@ -119,6 +125,9 @@ export class Controller implements vscode.Disposable, vscode.TextDocumentContent
 			this.showHome();
 			return;
 		}
+		if (!(await this.confirmLeave())) {
+			return;
+		}
 		this.replaceConversation(undefined);
 		this.title = 'New conversation';
 		await this.chatView.reveal();
@@ -134,6 +143,10 @@ export class Controller implements vscode.Disposable, vscode.TextDocumentContent
 		}
 		if (this.conversation?.id === sessionId) {
 			await this.chatView.reveal();
+			await this.postConversation();
+			return;
+		}
+		if (!(await this.confirmLeave())) {
 			return;
 		}
 		const apiKey = (await this.apiKeys.get()) ?? '';
@@ -141,6 +154,7 @@ export class Controller implements vscode.Disposable, vscode.TextDocumentContent
 		this.replaceConversation(conversation);
 		this.title = (await this.findConversation(sessionId))?.title ?? 'Conversation';
 		await this.chatView.reveal();
+		await this.widenChat();
 		try {
 			await conversation.loadHistory();
 		} catch (error) {
@@ -159,9 +173,13 @@ export class Controller implements vscode.Disposable, vscode.TextDocumentContent
 			await this.openProject(folder, { prompt: text });
 			return;
 		}
+		if (!(await this.confirmLeave())) {
+			return;
+		}
 		this.replaceConversation(undefined);
 		this.title = truncate(text.replace(/\s+/g, ' '), 80);
 		await this.chatView.reveal();
+		await this.widenChat();
 		await this.postConversation();
 		await this.send(text);
 	}
@@ -214,6 +232,39 @@ export class Controller implements vscode.Disposable, vscode.TextDocumentContent
 	private replaceConversation(next: Conversation | undefined): void {
 		this.conversation?.dispose();
 		this.conversation = next;
+	}
+
+	/** Switching away stops Claude, so ask first while it is still working. */
+	private async confirmLeave(): Promise<boolean> {
+		if (!this.conversation?.isBusy) {
+			return true;
+		}
+		const choice = await vscode.window.showWarningMessage(
+			'Claude is still working in this conversation. Switching stops it.',
+			{ modal: true },
+			'Stop and switch',
+		);
+		return choice === 'Stop and switch';
+	}
+
+	// --- layout ----------------------------------------------------------
+
+	/**
+	 * Gives the conversation the whole window. VS Code makes room again when
+	 * Claude's changes open as diffs, and the chat header can toggle it.
+	 */
+	private async widenChat(): Promise<void> {
+		if (vscode.workspace.getConfiguration('cinder').get('fullWidthConversations', true)) {
+			await this.runLayoutCommand('workbench.action.maximizeAuxiliaryBar');
+		}
+	}
+
+	private async runLayoutCommand(id: string): Promise<void> {
+		try {
+			await vscode.commands.executeCommand(id);
+		} catch (error) {
+			this.output.warn(`${id} is not available: ${error}`);
+		}
 	}
 
 	// --- edits -----------------------------------------------------------
@@ -351,6 +402,24 @@ export class Controller implements vscode.Disposable, vscode.TextDocumentContent
 			recent,
 		};
 		this.chatView.post({ type: 'conversation', state });
+	}
+
+	private async postConversationList(): Promise<void> {
+		const folder = this.currentFolder;
+		if (!folder) {
+			this.showHome();
+			return;
+		}
+		const conversations = (await this.listConversations()).filter(c => sameFolder(c.cwd, folder));
+		this.chatView.post({
+			type: 'conversations',
+			state: {
+				projectName: folderName(folder),
+				currentId: this.conversation?.id,
+				busy: this.conversation?.isBusy ?? false,
+				conversations,
+			},
+		});
 	}
 
 	dispose(): void {

@@ -101,6 +101,11 @@
 					"default": true,
 					"description": "Open a diff for every file Claude changes, so you can keep or undo it."
 				},
+				"cinder.fullWidthConversations": {
+					"type": "boolean",
+					"default": true,
+					"description": "Let a conversation fill the window when you open it. Claude's changes still open beside it."
+				},
 				"cinder.openHomeOnStartup": {
 					"type": "boolean",
 					"default": true,
