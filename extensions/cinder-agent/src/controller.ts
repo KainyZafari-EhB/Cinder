@@ -20,6 +20,7 @@ export const BEFORE_SCHEME = 'cinder-before';
 export class Controller implements vscode.Disposable, vscode.TextDocumentContentProvider {
 	private conversation: Conversation | undefined;
 	private title = 'New conversation';
+	private listOnReady = false;
 	readonly edits = new EditTracker();
 	private readonly disposables: vscode.Disposable[] = [];
 
@@ -66,6 +67,10 @@ export class Controller implements vscode.Disposable, vscode.TextDocumentContent
 					await this.refreshHome();
 				} else {
 					await this.postConversation();
+					if (this.listOnReady) {
+						this.listOnReady = false;
+						await this.postConversationList();
+					}
 				}
 				break;
 			case 'send':
@@ -118,6 +123,20 @@ export class Controller implements vscode.Disposable, vscode.TextDocumentContent
 
 	showHome(): void {
 		this.homePanel.show();
+	}
+
+	/** Opens the chat view on the list of this project's conversations. */
+	async showConversations(): Promise<void> {
+		if (!this.currentFolder) {
+			this.showHome();
+			return;
+		}
+		// A chat view that is not loaded yet shows the list once it is ready.
+		this.listOnReady = !this.chatView.isResolved;
+		await this.chatView.reveal();
+		if (!this.listOnReady) {
+			await this.postConversationList();
+		}
 	}
 
 	async newConversation(): Promise<void> {

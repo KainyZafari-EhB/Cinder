@@ -15,6 +15,10 @@ export class ChatView implements vscode.WebviewViewProvider, Surface {
 
 	constructor(private readonly extensionUri: vscode.Uri, private readonly onMessage: Handler) { }
 
+	get isResolved(): boolean {
+		return this.view !== undefined;
+	}
+
 	resolveWebviewView(view: vscode.WebviewView): void {
 		this.view = view;
 		view.webview.options = webviewOptions(this.extensionUri);

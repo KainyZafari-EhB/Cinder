@@ -52,6 +52,12 @@
 				"icon": "$(add)"
 			},
 			{
+				"command": "cinder.showConversations",
+				"title": "Show Conversations",
+				"category": "Cinder",
+				"icon": "$(list-unordered)"
+			},
+			{
 				"command": "cinder.setApiKey",
 				"title": "Set Anthropic API Key",
 				"category": "Cinder"
@@ -64,6 +70,11 @@
 		],
 		"menus": {
 			"view/title": [
+				{
+					"command": "cinder.showConversations",
+					"when": "view == cinder.chat",
+					"group": "navigation@0"
+				},
 				{
 					"command": "cinder.newConversation",
 					"when": "view == cinder.chat",
