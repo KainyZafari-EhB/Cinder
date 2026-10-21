@@ -15,11 +15,10 @@ export function renderHome(root: HTMLElement, state: HomeState, markUrl: string)
 	});
 
 	const main = h('main', { class: 'home' },
-		h('header', { class: 'brand' },
-			h('img', { src: markUrl, alt: '', width: 22, height: 22 }),
-			h('span', {}, 'Cinder'),
+		h('div', { class: 'greeting-row' },
+			h('img', { src: markUrl, alt: 'Cinder', width: 34, height: 34 }),
+			h('h1', { class: 'greeting' }, 'What\'s up?'),
 		),
-		h('h1', { class: 'greeting' }, 'What\'s up?'),
 		composer.element,
 		!state.hasApiKey && h('p', { class: 'setup' },
 			'Cinder talks to Claude with your own Anthropic API key. ',

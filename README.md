@@ -10,7 +10,7 @@ Cinder is a fork of [VS Code](https://github.com/microsoft/vscode) (Code - OSS),
 - **Conversations open projects**: clicking a conversation opens its project window and continues the conversation there.
 - **Claude in the side bar**: streaming replies, tool activity, permission prompts for commands, Stop.
 - **Review every change**: each file Claude edits opens as a diff, with Keep and Undo.
-- **Look and feel**: Cinder Dark (black and ember orange), Cinder Midnight and Cinder Light; Bricolage Grotesque and JetBrains Mono.
+- **Look and feel**: calm and warm, close to the Claude desktop app: Inter for the interface, Source Serif 4 for Claude's replies, JetBrains Mono for code. Themes: Cinder Dark (warm charcoal and ember orange), Cinder Midnight and Cinder Light.
 
 Claude runs through the [Claude Agent SDK](https://code.claude.com/docs/en/agent-sdk/overview) with your own Anthropic API key (Command Palette → "Cinder: Set Anthropic API Key"). Conversations are stored as Claude Code sessions, so the ones you had with Claude Code in a terminal show up too.
 

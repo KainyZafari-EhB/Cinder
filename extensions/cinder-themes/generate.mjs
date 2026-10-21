@@ -8,12 +8,12 @@ const palettes = {
 	'cinder-dark': {
 		label: 'Cinder Dark',
 		type: 'dark',
-		shell: '#080706', base: '#100f0e', deep: '#0c0b0a', surface: '#191715', raised: '#211e1b', border: '#2a2623', line: '#171513',
-		text: '#ede6df', muted: '#8f857c', faint: '#5c544e',
-		accent: '#ff7a2e', accentHover: '#ff8f4d', onAccent: '#1a0d04', glow: '#ffb070',
+		shell: '#161514', base: '#201f1d', deep: '#1c1b19', surface: '#2a2926', raised: '#33312e', border: '#383632', line: '#262523',
+		text: '#ece9e2', muted: '#a39e95', faint: '#6f6a63',
+		accent: '#ec8550', accentHover: '#f29766', onAccent: '#1c0e05', glow: '#f4b183',
 		added: '#8fcf7a', removed: '#ef7a6b', modified: '#e8b45a', info: '#7fb8e6',
 		syntax: {
-			comment: '#6b625b', keyword: '#ff7a2e', string: '#e9c38a', number: '#c9a3e8', fn: '#ffc28a',
+			comment: '#7b756d', keyword: '#ec8550', string: '#e2c08d', number: '#c9a3e8', fn: '#ffc28a',
 			type: '#8fd1c6', variable: '#ede6df', property: '#d8cfc7', punctuation: '#a39a92', tag: '#ff8f5a', regex: '#8fd1c6',
 		},
 	},
@@ -32,9 +32,9 @@ const palettes = {
 	'cinder-light': {
 		label: 'Cinder Light',
 		type: 'light',
-		shell: '#ebe8e3', base: '#fcfcfb', deep: '#f6f5f3', surface: '#ffffff', raised: '#efede9', border: '#e2dfda', line: '#f3f1ee',
+		shell: '#ece9e3', base: '#fbfaf8', deep: '#f4f2ee', surface: '#ffffff', raised: '#ece9e3', border: '#e0ddd6', line: '#f2f0ec',
 		text: '#1d1a17', muted: '#6e665f', faint: '#a39b93',
-		accent: '#d9530c', accentHover: '#c2470a', onAccent: '#ffffff', glow: '#f08a3c',
+		accent: '#c95f2c', accentHover: '#b35224', onAccent: '#ffffff', glow: '#e8935f',
 		added: '#3f8f2f', removed: '#c8402f', modified: '#a77612', info: '#2f6fb0',
 		syntax: {
 			comment: '#8b837b', keyword: '#c9480a', string: '#8a5a12', number: '#7d4fb0', fn: '#0f6b8f',

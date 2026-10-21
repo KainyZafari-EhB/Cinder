@@ -1,18 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
 	<defs>
 		<radialGradient id="coal" cx="40%" cy="38%" r="70%">
-			<stop offset="0" stop-color="#ffb070"/>
-			<stop offset="0.45" stop-color="#ff7a2e"/>
-			<stop offset="1" stop-color="#d9480f"/>
+			<stop offset="0" stop-color="#f4b183"/>
+			<stop offset="0.45" stop-color="#ec8550"/>
+			<stop offset="1" stop-color="#c95f2c"/>
 		</radialGradient>
 		<radialGradient id="glow" cx="50%" cy="50%" r="50%">
-			<stop offset="0" stop-color="#ff7a2e" stop-opacity="0.35"/>
-			<stop offset="1" stop-color="#ff7a2e" stop-opacity="0"/>
+			<stop offset="0" stop-color="#ec8550" stop-opacity="0.35"/>
+			<stop offset="1" stop-color="#ec8550" stop-opacity="0"/>
 		</radialGradient>
 	</defs>
-	<rect x="24" y="24" width="464" height="464" rx="112" fill="#100f0e"/>
-	<rect x="24.5" y="24.5" width="463" height="463" rx="111.5" fill="none" stroke="#2a2623"/>
+	<rect x="24" y="24" width="464" height="464" rx="112" fill="#201f1d"/>
+	<rect x="24.5" y="24.5" width="463" height="463" rx="111.5" fill="none" stroke="#383632"/>
 	<circle cx="232" cy="292" r="170" fill="url(#glow)"/>
 	<circle cx="232" cy="292" r="124" fill="url(#coal)"/>
-	<circle cx="386" cy="132" r="40" fill="#ffb070"/>
+	<circle cx="386" cy="132" r="40" fill="#f4b183"/>
 </svg>

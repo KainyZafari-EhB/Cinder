@@ -1,6 +1,9 @@
 import { autoGrow, h } from './dom';
 import { loadState, saveState } from './vscode';
 
+const SEND_ICON = '<svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 13V3M3.5 7.5 8 3l4.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const STOP_ICON = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="4" y="4" width="8" height="8" rx="1.5" fill="currentColor"/></svg>';
+
 export interface ComposerOptions {
 	placeholder: string;
 	label: string;
@@ -25,7 +28,10 @@ export class Composer {
 			spellcheck: 'true',
 		});
 		this.input.value = loadState().draft ?? '';
-		this.input.addEventListener('input', () => saveState({ draft: this.input.value }));
+		this.input.addEventListener('input', () => {
+			saveState({ draft: this.input.value });
+			this.action.classList.toggle('empty', this.input.value.trim() === '');
+		});
 		this.input.addEventListener('keydown', event => {
 			if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) {
 				event.preventDefault();
@@ -53,8 +59,10 @@ export class Composer {
 		this.busy = busy && this.options.onStop !== undefined;
 		this.element.classList.toggle('busy', busy);
 		this.action.classList.toggle('stop', this.busy);
-		this.action.textContent = this.busy ? 'Stop' : 'Send';
+		this.action.classList.toggle('empty', this.input.value.trim() === '');
+		this.action.innerHTML = this.busy ? STOP_ICON : SEND_ICON;
 		this.action.setAttribute('aria-label', this.busy ? 'Stop Claude' : 'Send message');
+		this.action.title = this.busy ? 'Stop (Esc)' : 'Send (Enter)';
 	}
 
 	focus(): void {

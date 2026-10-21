@@ -1,21 +1,20 @@
 diff --git a/src/vs/workbench/browser/media/cinder.css b/src/vs/workbench/browser/media/cinder.css
 new file mode 100644
-index 00000000..fe45177b
+index 00000000..7227ce74
 --- /dev/null
 +++ b/src/vs/workbench/browser/media/cinder.css
-@@ -0,0 +1,56 @@
+@@ -0,0 +1,55 @@
 +/*---------------------------------------------------------------------------------------------
 + *  Cinder: workbench typography and motion.
-+ *  Fonts: Bricolage Grotesque and JetBrains Mono, SIL Open Font License 1.1.
++ *  Fonts: Inter and JetBrains Mono, SIL Open Font License 1.1.
 + *--------------------------------------------------------------------------------------------*/
 +
 +@font-face {
-+	font-family: 'Bricolage Grotesque';
++	font-family: 'Inter';
 +	font-style: normal;
-+	font-weight: 200 800;
-+	font-stretch: 75% 100%;
++	font-weight: 100 900;
 +	font-display: swap;
-+	src: url('./BricolageGrotesque.ttf') format('truetype');
++	src: url('./Inter.ttf') format('truetype');
 +}
 +
 +@font-face {
@@ -26,12 +25,12 @@ index 00000000..fe45177b
 +	src: url('./JetBrainsMono.ttf') format('truetype');
 +}
 +
-+.monaco-workbench.mac { font-family: 'Bricolage Grotesque', -apple-system, BlinkMacSystemFont, sans-serif; }
-+.monaco-workbench.windows { font-family: 'Bricolage Grotesque', "Segoe WPC", "Segoe UI", sans-serif; }
-+.monaco-workbench.linux { font-family: 'Bricolage Grotesque', system-ui, "Ubuntu", "Droid Sans", sans-serif; }
++.monaco-workbench.mac { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
++.monaco-workbench.windows { font-family: 'Inter', "Segoe WPC", "Segoe UI", sans-serif; }
++.monaco-workbench.linux { font-family: 'Inter', system-ui, "Ubuntu", "Droid Sans", sans-serif; }
 +
 +.monaco-workbench {
-+	font-variation-settings: 'opsz' 14;
++	font-feature-settings: 'cv11';
 +}
 +
 +/* Softer, quicker feedback on the things you touch most. */

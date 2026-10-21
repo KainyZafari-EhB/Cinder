@@ -1,11 +1,18 @@
-/* Bricolage Grotesque and JetBrains Mono, both SIL Open Font License 1.1. */
+/* Inter, Source Serif 4 and JetBrains Mono, all SIL Open Font License 1.1. */
 @font-face {
-	font-family: 'Bricolage Grotesque';
+	font-family: 'Inter';
 	font-style: normal;
 	font-display: swap;
-	font-weight: 200 800;
-	font-stretch: 75% 100%;
-	src: url('./fonts/BricolageGrotesque.woff2') format('woff2-variations');
+	font-weight: 100 900;
+	src: url('./fonts/Inter.woff2') format('woff2-variations');
+}
+
+@font-face {
+	font-family: 'Source Serif 4';
+	font-style: normal;
+	font-display: swap;
+	font-weight: 200 900;
+	src: url('./fonts/SourceSerif4.woff2') format('woff2-variations');
 }
 
 @font-face {

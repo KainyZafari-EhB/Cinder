@@ -55,7 +55,8 @@ function copyFonts() {
 	const out = join(root, 'media/fonts');
 	mkdirSync(out, { recursive: true });
 	const fonts = [
-		['@fontsource-variable/bricolage-grotesque', 'bricolage-grotesque-latin-standard-normal.woff2', 'BricolageGrotesque.woff2'],
+		['@fontsource-variable/inter', 'inter-latin-standard-normal.woff2', 'Inter.woff2'],
+		['@fontsource-variable/source-serif-4', 'source-serif-4-latin-standard-normal.woff2', 'SourceSerif4.woff2'],
 		['@fontsource-variable/jetbrains-mono', 'jetbrains-mono-latin-wght-normal.woff2', 'JetBrainsMono.woff2'],
 	];
 	for (const [pkg, file, target] of fonts) {

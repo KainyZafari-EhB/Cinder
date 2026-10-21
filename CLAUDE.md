@@ -30,6 +30,7 @@ Constraints:
 
 - Authentication is an Anthropic API key only (secret storage or `ANTHROPIC_API_KEY`). Anthropic does not allow third-party apps built on the Agent SDK to offer claude.ai login, so do not add it.
 - Branding: the product is Cinder. It must not be called or look like Claude Code; "Claude Agent" or "Powered by Claude" are fine. The app icon and mark are original (`branding/`, `media/mark.svg`).
+- Look: Kainy wants the calm, warm feel of the Claude desktop app (warm charcoal, serif replies, sans interface, rounded composer, user messages in bubbles). Get there with Cinder's own fonts (Inter, Source Serif 4, JetBrains Mono), colors and mark; do not copy Anthropic's fonts, logo or exact accent color.
 - `src/core/agentEnv.ts` strips inherited `CLAUDE*`/`ANTHROPIC_*` variables before starting Claude Code. Keep that, or a Cinder launched from inside a Claude Code session would reuse that session's credentials.
 
 ## Checks
@@ -38,7 +39,7 @@ From `extensions/cinder-agent`: `npm run typecheck`, `npm test`, `npm run test:s
 
 ## Status and next steps
 
-Done: home screen, conversation list across projects, open conversation → project window, streaming chat in the secondary side bar, permission prompts, Stop, edit review with Keep/Undo, three themes, fonts, app icon (Linux and Windows).
+Done: home screen, conversation list across projects, open conversation → project window, streaming chat in the secondary side bar, permission prompts, Stop, edit review with Keep/Undo, three themes, Claude-desktop-style restyle (Inter + Source Serif 4), app icon (Linux and Windows).
 
 Not verified yet: the full VS Code build was not run when this was set up (the build machine could not download Electron). First job on a real machine: `scripts/dev.sh`, then fix whatever the build reports.
 
