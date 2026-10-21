@@ -9,7 +9,7 @@ import { folderName, sameFolder } from './core/paths';
 import { truncate } from './core/toolSummary';
 import type { HandoffStore } from './handoff';
 import type { ConversationState, ConversationSummary, HomeState, ViewMessage } from './protocol';
-import type { ChatView, HomePanel, Surface } from './views/surfaces';
+import { ChatPanel, type HomePanel, type Surface } from './views/surfaces';
 
 export const BEFORE_SCHEME = 'cinder-before';
 
@@ -21,10 +21,11 @@ export class Controller implements vscode.Disposable, vscode.TextDocumentContent
 	private conversation: Conversation | undefined;
 	private title = 'New conversation';
 	private listOnReady = false;
+	private fullWidth = false;
 	readonly edits = new EditTracker();
 	private readonly disposables: vscode.Disposable[] = [];
 
-	chatView!: ChatView;
+	chat!: ChatPanel;
 	homePanel!: HomePanel;
 
 	constructor(
@@ -48,6 +49,8 @@ export class Controller implements vscode.Disposable, vscode.TextDocumentContent
 			await this.startConversation(handoff.prompt, handoff.cwd);
 		} else if (!this.currentFolder && vscode.workspace.getConfiguration('cinder').get('openHomeOnStartup', true)) {
 			this.showHome();
+		} else if (this.currentFolder && !ChatPanel.hasTab()) {
+			await this.chat.reveal();
 		}
 	}
 
@@ -67,6 +70,7 @@ export class Controller implements vscode.Disposable, vscode.TextDocumentContent
 					await this.refreshHome();
 				} else {
 					await this.postConversation();
+					this.chat.post({ type: 'layout', fullWidth: this.fullWidth });
 					if (this.listOnReady) {
 						this.listOnReady = false;
 						await this.postConversationList();
@@ -92,7 +96,7 @@ export class Controller implements vscode.Disposable, vscode.TextDocumentContent
 				await this.handleEdit(message.id, message.action);
 				break;
 			case 'openFile':
-				await vscode.window.showTextDocument(vscode.Uri.file(this.resolveInProject(message.path)), { preview: true });
+				await vscode.window.showTextDocument(vscode.Uri.file(this.resolveInProject(message.path)), { preview: true, viewColumn: this.besideChat });
 				break;
 			case 'setApiKey':
 				await this.apiKeys.prompt();
@@ -111,7 +115,7 @@ export class Controller implements vscode.Disposable, vscode.TextDocumentContent
 				await this.postConversationList();
 				break;
 			case 'toggleFullWidth':
-				await this.runLayoutCommand('workbench.action.toggleMaximizedAuxiliaryBar');
+				await this.setFullWidth(!this.fullWidth);
 				break;
 			case 'showHome':
 				this.showHome();
@@ -132,8 +136,8 @@ export class Controller implements vscode.Disposable, vscode.TextDocumentContent
 			return;
 		}
 		// A chat view that is not loaded yet shows the list once it is ready.
-		this.listOnReady = !this.chatView.isResolved;
-		await this.chatView.reveal();
+		this.listOnReady = !this.chat.isResolved;
+		await this.chat.reveal();
 		if (!this.listOnReady) {
 			await this.postConversationList();
 		}
@@ -149,7 +153,7 @@ export class Controller implements vscode.Disposable, vscode.TextDocumentContent
 		}
 		this.replaceConversation(undefined);
 		this.title = 'New conversation';
-		await this.chatView.reveal();
+		await this.chat.reveal();
 		await this.postConversation();
 	}
 
@@ -161,7 +165,7 @@ export class Controller implements vscode.Disposable, vscode.TextDocumentContent
 			return;
 		}
 		if (this.conversation?.id === sessionId) {
-			await this.chatView.reveal();
+			await this.chat.reveal();
 			await this.postConversation();
 			return;
 		}
@@ -172,8 +176,8 @@ export class Controller implements vscode.Disposable, vscode.TextDocumentContent
 		const conversation = this.createConversation(cwd, apiKey, sessionId);
 		this.replaceConversation(conversation);
 		this.title = (await this.findConversation(sessionId))?.title ?? 'Conversation';
-		await this.chatView.reveal();
-		await this.widenChat();
+		await this.chat.reveal();
+		await this.fillWindow();
 		try {
 			await conversation.loadHistory();
 		} catch (error) {
@@ -197,8 +201,8 @@ export class Controller implements vscode.Disposable, vscode.TextDocumentContent
 		}
 		this.replaceConversation(undefined);
 		this.title = truncate(text.replace(/\s+/g, ' '), 80);
-		await this.chatView.reveal();
-		await this.widenChat();
+		await this.chat.reveal();
+		await this.fillWindow();
 		await this.postConversation();
 		await this.send(text);
 	}
@@ -217,7 +221,8 @@ export class Controller implements vscode.Disposable, vscode.TextDocumentContent
 			this.replaceConversation(this.createConversation(folder, apiKey, undefined));
 			if (this.title === 'New conversation') {
 				this.title = truncate(text.replace(/\s+/g, ' '), 80);
-				this.chatView.post({ type: 'title', title: this.title });
+				this.chat.post({ type: 'title', title: this.title });
+				this.chat.setTitle(this.title);
 			}
 		}
 		this.conversation!.setApiKey(apiKey);
@@ -233,9 +238,9 @@ export class Controller implements vscode.Disposable, vscode.TextDocumentContent
 			model: config.get<string>('model'),
 			edits: this.edits,
 			listener: {
-				upsert: item => this.isActive(conversation) && this.chatView.post({ type: 'upsert', item }),
-				appendText: (id, text) => this.isActive(conversation) && this.chatView.post({ type: 'appendText', id, text }),
-				busy: busy => this.isActive(conversation) && this.chatView.post({ type: 'busy', busy }),
+				upsert: item => this.isActive(conversation) && this.chat.post({ type: 'upsert', item }),
+				appendText: (id, text) => this.isActive(conversation) && this.chat.post({ type: 'appendText', id, text }),
+				busy: busy => this.isActive(conversation) && this.chat.post({ type: 'busy', busy }),
 				sessionStarted: () => void this.refreshHome(),
 				editMade: record => this.isActive(conversation) && void this.reviewEdit(record, true),
 				log: line => this.output.info(line),
@@ -268,14 +273,33 @@ export class Controller implements vscode.Disposable, vscode.TextDocumentContent
 
 	// --- layout ----------------------------------------------------------
 
-	/**
-	 * Gives the conversation the whole window. VS Code makes room again when
-	 * Claude's changes open as diffs, and the chat header can toggle it.
-	 */
-	private async widenChat(): Promise<void> {
+	/** Opening a conversation gives it the whole window, unless turned off. */
+	private async fillWindow(): Promise<void> {
 		if (vscode.workspace.getConfiguration('cinder').get('fullWidthConversations', true)) {
-			await this.runLayoutCommand('workbench.action.maximizeAuxiliaryBar');
+			await this.setFullWidth(true);
 		}
+	}
+
+	/** Full width closes both side bars; leaving it brings the file side bar back. */
+	private async setFullWidth(on: boolean): Promise<void> {
+		this.fullWidth = on;
+		if (on) {
+			await this.runLayoutCommand('workbench.action.closeSidebar');
+			await this.runLayoutCommand('workbench.action.closeAuxiliaryBar');
+		} else {
+			await this.runLayoutCommand('workbench.action.focusSideBar');
+			await this.chat.reveal();
+		}
+		this.chat.post({ type: 'layout', fullWidth: on });
+	}
+
+	/** Files and diffs open next to the chat, so the conversation stays in view. */
+	private get besideChat(): vscode.ViewColumn {
+		const column = this.chat.viewColumn;
+		if (column === undefined) {
+			return vscode.ViewColumn.Beside;
+		}
+		return column === vscode.ViewColumn.One ? vscode.ViewColumn.Two : vscode.ViewColumn.One;
 	}
 
 	private async runLayoutCommand(id: string): Promise<void> {
@@ -325,12 +349,13 @@ export class Controller implements vscode.Disposable, vscode.TextDocumentContent
 		const before = vscode.Uri.from({ scheme: BEFORE_SCHEME, path: `/${record.id}/${name}` });
 		const after = vscode.Uri.file(record.path);
 		if (record.after === null) {
-			await vscode.window.showTextDocument(before, { preview: true, preserveFocus: automatic });
+			await vscode.window.showTextDocument(before, { preview: true, preserveFocus: automatic, viewColumn: this.besideChat });
 			return;
 		}
 		await vscode.commands.executeCommand('vscode.diff', before, after, `${name} (Claude's change)`, {
 			preview: true,
 			preserveFocus: automatic,
+			viewColumn: this.besideChat,
 		} satisfies vscode.TextDocumentShowOptions);
 	}
 
@@ -344,7 +369,7 @@ export class Controller implements vscode.Disposable, vscode.TextDocumentContent
 
 	private async openProject(folder: string, handoff: { sessionId?: string; prompt?: string }): Promise<void> {
 		if (this.currentFolder && sameFolder(this.currentFolder, folder)) {
-			await this.chatView.reveal();
+			await this.chat.reveal();
 			return;
 		}
 		if (handoff.sessionId || handoff.prompt) {
@@ -420,7 +445,8 @@ export class Controller implements vscode.Disposable, vscode.TextDocumentContent
 			hasApiKey: await this.apiKeys.has(),
 			recent,
 		};
-		this.chatView.post({ type: 'conversation', state });
+		this.chat.setTitle(this.title);
+		this.chat.post({ type: 'conversation', state });
 	}
 
 	private async postConversationList(): Promise<void> {
@@ -430,7 +456,7 @@ export class Controller implements vscode.Disposable, vscode.TextDocumentContent
 			return;
 		}
 		const conversations = (await this.listConversations()).filter(c => sameFolder(c.cwd, folder));
-		this.chatView.post({
+		this.chat.post({
 			type: 'conversations',
 			state: {
 				projectName: folderName(folder),

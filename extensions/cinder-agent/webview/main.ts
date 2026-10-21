@@ -32,6 +32,9 @@ window.addEventListener('message', (event: MessageEvent<HostMessage>) => {
 		case 'busy':
 			chat?.setBusy(message.busy);
 			break;
+		case 'layout':
+			chat?.setFullWidth(message.fullWidth);
+			break;
 		case 'title':
 			chat?.setTitle(message.title);
 			break;

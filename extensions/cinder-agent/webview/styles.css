@@ -7,7 +7,7 @@
  */
 
 :root {
-	--bg: var(--vscode-sideBar-background, #1c1b19);
+	--bg: var(--vscode-editor-background, #201f1d);
 	--surface: var(--vscode-input-background, #2a2926);
 	--surface-raised: color-mix(in srgb, var(--surface) 88%, var(--text) 6%);
 	--border: var(--vscode-widget-border, var(--vscode-panel-border, #383632));
@@ -32,10 +32,6 @@
 	--ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 
 	color-scheme: dark light;
-}
-
-html[data-mode='home'] {
-	--bg: var(--vscode-editor-background, #201f1d);
 }
 
 * {

@@ -66,6 +66,8 @@ export type HostMessage =
 	| { type: 'upsert'; item: TranscriptItem }
 	| { type: 'appendText'; id: string; text: string }
 	| { type: 'busy'; busy: boolean }
+	/** Whether the conversation fills the window, with the side bars closed. */
+	| { type: 'layout'; fullWidth: boolean }
 	| { type: 'title'; title: string };
 
 export type ViewMessage =

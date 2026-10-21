@@ -8,7 +8,7 @@ Cinder is a fork of [VS Code](https://github.com/microsoft/vscode) (Code - OSS),
 
 - **Home screen**: "What's up?", a message box with a project picker, and your recent conversations across all projects.
 - **Conversations open projects**: clicking a conversation opens its project window and continues the conversation there.
-- **Claude in the side bar**: streaming replies, tool activity, permission prompts for commands, Stop.
+- **Conversations fill the window**: each conversation is a tab that takes the whole window when you open it ("Show files" brings the file side bar back), with streaming replies, tool activity, permission prompts for commands and Stop. "Conversations" in the status bar or the chat header switches between a project's conversations.
 - **Review every change**: each file Claude edits opens as a diff, with Keep and Undo.
 - **Look and feel**: calm and warm, close to the Claude desktop app: Inter for the interface, Source Serif 4 for Claude's replies, JetBrains Mono for code. Themes: Cinder Dark (warm charcoal and ember orange), Cinder Midnight and Cinder Light.
 

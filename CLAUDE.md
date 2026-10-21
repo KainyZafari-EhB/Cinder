@@ -22,7 +22,7 @@ Rules that keep this maintainable:
 - `src/agent/conversation.ts`: one conversation = one long-lived Agent SDK `query()` in streaming-input mode (`PromptQueue`). Edits are auto-accepted (`permissionMode: 'acceptEdits'`) and tracked by PreToolUse/PostToolUse hooks for review; other tools ask through `canUseTool`, shown as permission cards.
 - `src/agent/edits.ts`: snapshots files before Claude edits them, for diffs and Undo.
 - `src/core/`: pure logic with unit tests (transcript building from SDK messages, line diff counts, session listing, env isolation). Keep it free of `vscode` imports.
-- `src/controller.ts`: home screen, chat view, switching projects. Opening a conversation from another project stores a handoff in global state, then opens that folder; the new window picks it up in `startup()`.
+- `src/controller.ts`: home screen, chat tab (`ChatPanel` in `src/views/surfaces.ts`, an editor tab so it can fill the window; diffs open beside it), switching conversations and projects. Opening a conversation from another project stores a handoff in global state, then opens that folder; the new window picks it up in `startup()`.
 - `webview/`: the UI (plain TypeScript + DOM, no framework). Colors come from theme CSS variables, so every theme works. Messages between host and webview are typed in `src/protocol.ts`.
 - Conversations are Claude Code sessions in `~/.claude/projects`, listed with the SDK's `listSessions()`.
 
@@ -39,7 +39,7 @@ From `extensions/cinder-agent`: `npm run typecheck`, `npm test`, `npm run test:s
 
 ## Status and next steps
 
-Done: home screen, conversation list across projects, open conversation → project window, streaming chat in the secondary side bar, permission prompts, Stop, edit review with Keep/Undo, three themes, Claude-desktop-style restyle (Inter + Source Serif 4), app icon (Linux and Windows).
+Done: home screen, conversation list across projects, open conversation → project window, streaming chat as a full-window editor tab (Conversations list and status bar entry to switch), permission prompts, Stop, edit review with Keep/Undo, three themes, Claude-desktop-style restyle (Inter + Source Serif 4), app icon (Linux and Windows).
 
 Not verified yet: the full VS Code build was not run when this was set up (the build machine could not download Electron). First job on a real machine: `scripts/dev.sh`, then fix whatever the build reports.
 

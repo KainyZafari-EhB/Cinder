@@ -13,6 +13,7 @@ export class ChatScreen {
 	private readonly title: HTMLElement;
 	private readonly project: HTMLElement;
 	private readonly listButton: HTMLButtonElement;
+	private readonly widthButton: HTMLButtonElement;
 	private readonly list: HTMLElement;
 	private readonly transcript: HTMLElement;
 	private readonly empty: HTMLElement;
@@ -33,6 +34,11 @@ export class ChatScreen {
 			type: 'button',
 			onclick: () => this.listing ? this.showChat() : post({ type: 'showConversations' }),
 		});
+		this.widthButton = h('button', {
+			class: 'ghost head-button',
+			type: 'button',
+			onclick: () => post({ type: 'toggleFullWidth' }),
+		});
 		this.list = h('div', { class: 'conversation-list' });
 		this.transcript = h('div', { class: 'transcript', role: 'log', 'aria-live': 'polite' });
 		this.empty = h('div', { class: 'chat-empty' });
@@ -46,18 +52,14 @@ export class ChatScreen {
 			h('header', { class: 'chat-head' },
 				this.listButton,
 				h('div', { class: 'chat-heading' }, this.title, this.project),
-				h('button', {
-					class: 'ghost head-button',
-					type: 'button',
-					title: 'Fill the window, or show it beside the editor',
-					onclick: () => post({ type: 'toggleFullWidth' }),
-				}, 'Full width'),
+				this.widthButton,
 			),
 			this.list,
 			h('div', { class: 'scroller' }, this.empty, this.transcript),
 			this.composer.element,
 		);
 		container.replaceChildren(this.root);
+		this.setFullWidth(false);
 		this.showChat();
 	}
 
@@ -82,6 +84,11 @@ export class ChatScreen {
 		if (!this.listing) {
 			this.title.textContent = title;
 		}
+	}
+
+	setFullWidth(fullWidth: boolean): void {
+		this.widthButton.textContent = fullWidth ? 'Show files' : 'Full width';
+		this.widthButton.title = fullWidth ? 'Bring back the file side bar' : 'Close the side bars so the conversation fills the window';
 	}
 
 	/** Back from the list to the conversation, which kept running meanwhile. */
