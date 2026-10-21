@@ -8,27 +8,70 @@ export interface Surface {
 
 type Handler = (message: ViewMessage, surface: Surface) => void;
 
-/** The conversation view in the secondary side bar. */
-export class ChatView implements vscode.WebviewViewProvider, Surface {
-	static readonly viewId = 'cinder.chat';
-	private view: vscode.WebviewView | undefined;
+/**
+ * The conversation, shown as an editor tab so it gets the whole editor area.
+ * Claude's changes open as diffs beside it.
+ */
+export class ChatPanel implements vscode.WebviewPanelSerializer, Surface {
+	static readonly viewType = 'cinder.chat';
+	private panel: vscode.WebviewPanel | undefined;
+	private title = 'Conversation';
 
 	constructor(private readonly extensionUri: vscode.Uri, private readonly onMessage: Handler) { }
 
-	resolveWebviewView(view: vscode.WebviewView): void {
-		this.view = view;
-		view.webview.options = webviewOptions(this.extensionUri);
-		view.webview.html = webviewHtml(view.webview, this.extensionUri, 'chat');
-		view.webview.onDidReceiveMessage((message: ViewMessage) => this.onMessage(message, this));
-		view.onDidDispose(() => (this.view = undefined));
+	get isResolved(): boolean {
+		return this.panel !== undefined;
 	}
 
-	post(message: HostMessage): void {
-		void this.view?.webview.postMessage(message);
+	get viewColumn(): vscode.ViewColumn | undefined {
+		return this.panel?.viewColumn;
+	}
+
+	/** True when this window already has a chat tab, open or waiting to be restored. */
+	static hasTab(): boolean {
+		return vscode.window.tabGroups.all.some(group => group.tabs.some(tab =>
+			tab.input instanceof vscode.TabInputWebview && tab.input.viewType.endsWith(ChatPanel.viewType)));
 	}
 
 	async reveal(): Promise<void> {
-		await vscode.commands.executeCommand(`${ChatView.viewId}.focus`);
+		if (this.panel) {
+			this.panel.reveal(this.panel.viewColumn ?? vscode.ViewColumn.One);
+			return;
+		}
+		this.adopt(vscode.window.createWebviewPanel(ChatPanel.viewType, this.title, vscode.ViewColumn.One, {
+			...webviewOptions(this.extensionUri),
+			retainContextWhenHidden: true,
+		}));
+	}
+
+	/** Restores the chat tab after a window reload. */
+	async deserializeWebviewPanel(panel: vscode.WebviewPanel): Promise<void> {
+		if (this.panel) {
+			panel.dispose();
+			return;
+		}
+		this.adopt(panel);
+	}
+
+	setTitle(title: string): void {
+		this.title = title;
+		if (this.panel) {
+			this.panel.title = title;
+		}
+	}
+
+	post(message: HostMessage): void {
+		void this.panel?.webview.postMessage(message);
+	}
+
+	private adopt(panel: vscode.WebviewPanel): void {
+		this.panel = panel;
+		panel.title = this.title;
+		panel.iconPath = vscode.Uri.joinPath(this.extensionUri, 'media', 'mark.svg');
+		panel.webview.options = webviewOptions(this.extensionUri);
+		panel.webview.html = webviewHtml(panel.webview, this.extensionUri, 'chat');
+		panel.webview.onDidReceiveMessage((message: ViewMessage) => this.onMessage(message, this));
+		panel.onDidDispose(() => (this.panel = undefined));
 	}
 }
 

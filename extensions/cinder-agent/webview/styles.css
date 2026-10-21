@@ -7,7 +7,7 @@
  */
 
 :root {
-	--bg: var(--vscode-sideBar-background, #1c1b19);
+	--bg: var(--vscode-editor-background, #201f1d);
 	--surface: var(--vscode-input-background, #2a2926);
 	--surface-raised: color-mix(in srgb, var(--surface) 88%, var(--text) 6%);
 	--border: var(--vscode-widget-border, var(--vscode-panel-border, #383632));
@@ -32,10 +32,6 @@
 	--ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 
 	color-scheme: dark light;
-}
-
-html[data-mode='home'] {
-	--bg: var(--vscode-editor-background, #201f1d);
 }
 
 * {
@@ -378,8 +374,24 @@ button.link {
 }
 
 .chat-head {
-	padding: 10px 16px 8px;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 10px 8px;
 	border-bottom: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+}
+
+.chat-heading {
+	flex: 1;
+	min-width: 0;
+	text-align: center;
+}
+
+button.ghost.head-button {
+	flex: none;
+	padding: 3px 8px;
+	font-size: 12px;
+	white-space: nowrap;
 }
 
 .chat-title {
@@ -408,6 +420,47 @@ button.link {
 
 .chat > .composer {
 	margin: 0 12px 12px;
+}
+
+/* Keep lines readable when the conversation fills the window. */
+.scroller > *,
+.chat > .composer,
+.list-inner {
+	max-width: 760px;
+	margin-inline: auto;
+}
+
+.chat > .composer {
+	width: calc(100% - 24px);
+}
+
+.chat.listing > .scroller,
+.chat.listing > .composer,
+.chat:not(.listing) > .conversation-list {
+	display: none;
+}
+
+.conversation-list {
+	flex: 1;
+	overflow-y: auto;
+	padding: 16px 16px 24px;
+}
+
+.list-inner > .recent {
+	margin-top: 16px;
+}
+
+.conversation-row.current .row-time {
+	color: var(--accent);
+}
+
+.list-empty {
+	color: var(--muted);
+}
+
+.list-inner > .all-projects {
+	display: block;
+	margin: 16px 0 0 -11px;
 }
 
 .chat-empty {

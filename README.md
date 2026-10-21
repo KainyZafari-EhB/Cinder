@@ -8,7 +8,7 @@ Cinder is a fork of [VS Code](https://github.com/microsoft/vscode) (Code - OSS),
 
 - **Home screen**: "What's up?", a message box with a project picker, and your recent conversations across all projects.
 - **Conversations open projects**: clicking a conversation opens its project window and continues the conversation there.
-- **Claude in the side bar**: streaming replies, tool activity, permission prompts for commands, Stop.
+- **Conversations fill the window**: each conversation is a tab that takes the whole window when you open it ("Show files" brings the file side bar back), with streaming replies, tool activity, permission prompts for commands and Stop. "Conversations" in the status bar or the chat header switches between a project's conversations.
 - **Review every change**: each file Claude edits opens as a diff, with Keep and Undo.
 - **Look and feel**: calm and warm, close to the Claude desktop app: Inter for the interface, Source Serif 4 for Claude's replies, JetBrains Mono for code. Themes: Cinder Dark (warm charcoal and ember orange), Cinder Midnight and Cinder Light.
 
@@ -28,7 +28,7 @@ Claude runs through the [Claude Agent SDK](https://code.claude.com/docs/en/agent
 
 ## Build and run
 
-Requirements: Node.js 22, Python 3, git, and VS Code's [build prerequisites](https://github.com/microsoft/vscode/wiki/How-to-Contribute#prerequisites) (on Debian/Ubuntu/Pop!_OS: `build-essential g++ libx11-dev libxkbfile-dev libsecret-1-dev libkrb5-dev`).
+Requirements: Node.js 24 (at least the version in `vscode/.nvmrc`, 24.18.0 for VS Code 1.142; `npm ci` refuses anything else), Python 3, git, and VS Code's [build prerequisites](https://github.com/microsoft/vscode/wiki/How-to-Contribute#prerequisites) (on Debian/Ubuntu/Pop!_OS: `build-essential g++ libx11-dev libxkbfile-dev libsecret-1-dev libkrb5-dev`).
 
 ```bash
 # Quickest: try the extensions inside the VS Code you already have

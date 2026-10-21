@@ -1,25 +1,45 @@
-import type { ConversationState, ConversationSummary, TranscriptItem } from '../src/protocol';
+import type { ConversationListState, ConversationState, ConversationSummary, TranscriptItem } from '../src/protocol';
 import { Composer } from './composer';
 import { append, h, relativeTime } from './dom';
 import { renderMarkdown } from './markdown';
 import { post } from './vscode';
 
-/** The conversation view: transcript, empty state and composer. */
+/**
+ * The conversation view: transcript, empty state and composer, plus the
+ * list of the project's conversations it can switch to.
+ */
 export class ChatScreen {
 	private readonly root: HTMLElement;
 	private readonly title: HTMLElement;
 	private readonly project: HTMLElement;
+	private readonly listButton: HTMLButtonElement;
+	private readonly widthButton: HTMLButtonElement;
+	private readonly list: HTMLElement;
 	private readonly transcript: HTMLElement;
 	private readonly empty: HTMLElement;
 	private readonly composer: Composer;
 	private readonly elements = new Map<string, HTMLElement>();
 	private readonly items = new Map<string, TranscriptItem>();
 	private readonly pendingText = new Set<string>();
+	private conversationTitle = '';
+	private projectName = '';
+	private listing = false;
 	private frame = 0;
 
 	constructor(container: HTMLElement) {
 		this.title = h('div', { class: 'chat-title' });
 		this.project = h('div', { class: 'chat-project' });
+		this.listButton = h('button', {
+			class: 'ghost head-button',
+			type: 'button',
+			onclick: () => this.listing ? this.showChat() : post({ type: 'showConversations' }),
+		});
+		this.widthButton = h('button', {
+			class: 'ghost head-button',
+			type: 'button',
+			onclick: () => post({ type: 'toggleFullWidth' }),
+		});
+		this.list = h('div', { class: 'conversation-list' });
 		this.transcript = h('div', { class: 'transcript', role: 'log', 'aria-live': 'polite' });
 		this.empty = h('div', { class: 'chat-empty' });
 		this.composer = new Composer({
@@ -29,16 +49,24 @@ export class ChatScreen {
 			onStop: () => post({ type: 'stop' }),
 		});
 		this.root = h('div', { class: 'chat' },
-			h('header', { class: 'chat-head' }, this.title, this.project),
+			h('header', { class: 'chat-head' },
+				this.listButton,
+				h('div', { class: 'chat-heading' }, this.title, this.project),
+				this.widthButton,
+			),
+			this.list,
 			h('div', { class: 'scroller' }, this.empty, this.transcript),
 			this.composer.element,
 		);
 		container.replaceChildren(this.root);
+		this.setFullWidth(false);
+		this.showChat();
 	}
 
 	show(state: ConversationState): void {
-		this.title.textContent = state.title;
-		this.project.textContent = state.projectName;
+		this.conversationTitle = state.title;
+		this.projectName = state.projectName;
+		this.showChat();
 		this.elements.clear();
 		this.items.clear();
 		this.transcript.replaceChildren();
@@ -52,7 +80,59 @@ export class ChatScreen {
 	}
 
 	setTitle(title: string): void {
-		this.title.textContent = title;
+		this.conversationTitle = title;
+		if (!this.listing) {
+			this.title.textContent = title;
+		}
+	}
+
+	setFullWidth(fullWidth: boolean): void {
+		this.widthButton.textContent = fullWidth ? 'Show files' : 'Full width';
+		this.widthButton.title = fullWidth ? 'Bring back the file side bar' : 'Close the side bars so the conversation fills the window';
+	}
+
+	/** Back from the list to the conversation, which kept running meanwhile. */
+	showChat(): void {
+		this.listing = false;
+		this.root.classList.remove('listing');
+		this.title.textContent = this.conversationTitle;
+		this.project.textContent = this.projectName;
+		this.listButton.textContent = '‹ Conversations';
+		this.listButton.title = 'Other conversations in this project';
+	}
+
+	showList(state: ConversationListState): void {
+		this.listing = true;
+		this.root.classList.add('listing');
+		this.title.textContent = 'Conversations';
+		this.project.textContent = state.projectName;
+		this.listButton.textContent = '‹ Back';
+		this.listButton.title = 'Back to the open conversation';
+
+		const rows = state.conversations.map(conversation => {
+			const current = conversation.id === state.currentId;
+			return h('li', {},
+				h('button', {
+					class: `conversation-row${current ? ' current' : ''}`,
+					type: 'button',
+					title: conversation.title,
+					'aria-current': current ? 'true' : undefined,
+					onclick: () => current
+						? this.showChat()
+						: post({ type: 'openConversation', id: conversation.id, cwd: conversation.cwd }),
+				},
+					h('span', { class: 'row-title' }, conversation.title),
+					h('span', { class: 'row-time' }, current ? (state.busy ? 'working…' : 'open') : relativeTime(conversation.updatedAt)),
+				),
+			);
+		});
+		this.list.replaceChildren(h('div', { class: 'list-inner' },
+			h('button', { class: 'quiet-primary', type: 'button', onclick: () => post({ type: 'newConversation' }) }, 'New conversation'),
+			rows.length > 0
+				? h('section', { class: 'recent compact' }, h('ol', {}, ...rows))
+				: h('p', { class: 'list-empty' }, 'No conversations in this project yet.'),
+			h('button', { class: 'ghost all-projects', type: 'button', onclick: () => post({ type: 'showHome' }) }, 'All projects'),
+		));
 	}
 
 	setBusy(busy: boolean): void {

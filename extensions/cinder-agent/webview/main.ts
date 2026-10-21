@@ -20,6 +20,9 @@ window.addEventListener('message', (event: MessageEvent<HostMessage>) => {
 		case 'conversation':
 			chat?.show(message.state);
 			break;
+		case 'conversations':
+			chat?.showList(message.state);
+			break;
 		case 'upsert':
 			chat?.upsert(message.item);
 			break;
@@ -28,6 +31,9 @@ window.addEventListener('message', (event: MessageEvent<HostMessage>) => {
 			break;
 		case 'busy':
 			chat?.setBusy(message.busy);
+			break;
+		case 'layout':
+			chat?.setFullWidth(message.fullWidth);
 			break;
 		case 'title':
 			chat?.setTitle(message.title);

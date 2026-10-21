@@ -11,7 +11,8 @@
 	},
 	"main": "./dist/extension.js",
 	"activationEvents": [
-		"onStartupFinished"
+		"onStartupFinished",
+		"onWebviewPanel:cinder.chat"
 	],
 	"capabilities": {
 		"untrustedWorkspaces": {
@@ -20,24 +21,6 @@
 		}
 	},
 	"contributes": {
-		"viewsContainers": {
-			"secondarySidebar": [
-				{
-					"id": "cinder",
-					"title": "Claude Agent",
-					"icon": "media/mark.svg"
-				}
-			]
-		},
-		"views": {
-			"cinder": [
-				{
-					"type": "webview",
-					"id": "cinder.chat",
-					"name": "Conversation"
-				}
-			]
-		},
 		"commands": [
 			{
 				"command": "cinder.home",
@@ -52,6 +35,12 @@
 				"icon": "$(add)"
 			},
 			{
+				"command": "cinder.showConversations",
+				"title": "Show Conversations",
+				"category": "Cinder",
+				"icon": "$(list-unordered)"
+			},
+			{
 				"command": "cinder.setApiKey",
 				"title": "Set Anthropic API Key",
 				"category": "Cinder"
@@ -63,15 +52,20 @@
 			}
 		],
 		"menus": {
-			"view/title": [
+			"editor/title": [
+				{
+					"command": "cinder.showConversations",
+					"when": "activeWebviewPanelId == 'cinder.chat'",
+					"group": "navigation@0"
+				},
 				{
 					"command": "cinder.newConversation",
-					"when": "view == cinder.chat",
+					"when": "activeWebviewPanelId == 'cinder.chat'",
 					"group": "navigation@1"
 				},
 				{
 					"command": "cinder.home",
-					"when": "view == cinder.chat",
+					"when": "activeWebviewPanelId == 'cinder.chat'",
 					"group": "navigation@2"
 				}
 			]
@@ -101,6 +95,11 @@
 					"default": true,
 					"description": "Open a diff for every file Claude changes, so you can keep or undo it."
 				},
+				"cinder.fullWidthConversations": {
+					"type": "boolean",
+					"default": true,
+					"description": "Close the side bars when you open a conversation, so it fills the window. Claude's changes still open beside it."
+				},
 				"cinder.openHomeOnStartup": {
 					"type": "boolean",
 					"default": true,
@@ -111,7 +110,7 @@
 		"configurationDefaults": {
 			"chat.disableAIFeatures": true,
 			"workbench.startupEditor": "none",
-			"workbench.secondarySideBar.defaultVisibility": "visibleInWorkspace",
+			"workbench.secondarySideBar.defaultVisibility": "hidden",
 			"workbench.tips.enabled": false,
 			"workbench.layoutControl.enabled": false,
 			"workbench.editor.empty.hint": "hidden",
