@@ -28,7 +28,7 @@ Claude runs through the [Claude Agent SDK](https://code.claude.com/docs/en/agent
 
 ## Build and run
 
-Requirements: Node.js 22, Python 3, git, and VS Code's [build prerequisites](https://github.com/microsoft/vscode/wiki/How-to-Contribute#prerequisites) (on Debian/Ubuntu/Pop!_OS: `build-essential g++ libx11-dev libxkbfile-dev libsecret-1-dev libkrb5-dev`).
+Requirements: Node.js 24 (at least the version in `vscode/.nvmrc`, 24.18.0 for VS Code 1.142; `npm ci` refuses anything else), Python 3, git, and VS Code's [build prerequisites](https://github.com/microsoft/vscode/wiki/How-to-Contribute#prerequisites) (on Debian/Ubuntu/Pop!_OS: `build-essential g++ libx11-dev libxkbfile-dev libsecret-1-dev libkrb5-dev`).
 
 ```bash
 # Quickest: try the extensions inside the VS Code you already have
