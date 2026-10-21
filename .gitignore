@@ -1,0 +1,11 @@
+# Upstream VS Code checkout (downloaded by scripts/get-vscode.sh)
+/vscode/
+/VSCode-*/
+
+node_modules/
+dist/
+out/
+*.vsix
+.DS_Store
+/.build/
+/extensions/cinder-agent/media/fonts/

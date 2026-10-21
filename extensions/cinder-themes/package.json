@@ -1,0 +1,40 @@
+{
+	"name": "cinder-themes",
+	"displayName": "Cinder Themes",
+	"description": "Cinder's color themes: Dark (black and ember orange), Midnight and Light.",
+	"version": "0.1.0",
+	"publisher": "cinder",
+	"license": "MIT",
+	"private": true,
+	"engines": {
+		"vscode": "^1.140.0"
+	},
+	"categories": [
+		"Themes"
+	],
+	"scripts": {
+		"generate": "node generate.mjs"
+	},
+	"contributes": {
+		"themes": [
+			{
+				"id": "Cinder Dark",
+				"label": "Cinder Dark",
+				"uiTheme": "vs-dark",
+				"path": "./themes/cinder-dark.json"
+			},
+			{
+				"id": "Cinder Midnight",
+				"label": "Cinder Midnight",
+				"uiTheme": "vs-dark",
+				"path": "./themes/cinder-midnight.json"
+			},
+			{
+				"id": "Cinder Light",
+				"label": "Cinder Light",
+				"uiTheme": "vs",
+				"path": "./themes/cinder-light.json"
+			}
+		]
+	}
+}

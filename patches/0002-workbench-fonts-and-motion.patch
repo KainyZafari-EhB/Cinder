@@ -1,0 +1,74 @@
+diff --git a/src/vs/workbench/browser/media/cinder.css b/src/vs/workbench/browser/media/cinder.css
+new file mode 100644
+index 00000000..fe45177b
+--- /dev/null
++++ b/src/vs/workbench/browser/media/cinder.css
+@@ -0,0 +1,56 @@
++/*---------------------------------------------------------------------------------------------
++ *  Cinder: workbench typography and motion.
++ *  Fonts: Bricolage Grotesque and JetBrains Mono, SIL Open Font License 1.1.
++ *--------------------------------------------------------------------------------------------*/
++
++@font-face {
++	font-family: 'Bricolage Grotesque';
++	font-style: normal;
++	font-weight: 200 800;
++	font-stretch: 75% 100%;
++	font-display: swap;
++	src: url('./BricolageGrotesque.ttf') format('truetype');
++}
++
++@font-face {
++	font-family: 'JetBrains Mono';
++	font-style: normal;
++	font-weight: 100 800;
++	font-display: swap;
++	src: url('./JetBrainsMono.ttf') format('truetype');
++}
++
++.monaco-workbench.mac { font-family: 'Bricolage Grotesque', -apple-system, BlinkMacSystemFont, sans-serif; }
++.monaco-workbench.windows { font-family: 'Bricolage Grotesque', "Segoe WPC", "Segoe UI", sans-serif; }
++.monaco-workbench.linux { font-family: 'Bricolage Grotesque', system-ui, "Ubuntu", "Droid Sans", sans-serif; }
++
++.monaco-workbench {
++	font-variation-settings: 'opsz' 14;
++}
++
++/* Softer, quicker feedback on the things you touch most. */
++.monaco-workbench .monaco-list-row,
++.monaco-workbench .tabs-container > .tab,
++.monaco-workbench .action-item > .action-label,
++.monaco-workbench .monaco-button {
++	transition: background-color 110ms ease, color 110ms ease, opacity 110ms ease;
++}
++
++.monaco-workbench .quick-input-widget {
++	animation: cinder-rise 140ms cubic-bezier(0.22, 1, 0.36, 1);
++}
++
++.monaco-workbench .notifications-toasts .notification-toast-container {
++	animation: cinder-rise 180ms cubic-bezier(0.22, 1, 0.36, 1);
++}
++
++@keyframes cinder-rise {
++	from { opacity: 0; transform: translateY(-4px); }
++}
++
++@media (prefers-reduced-motion: reduce) {
++	.monaco-workbench .quick-input-widget,
++	.monaco-workbench .notifications-toasts .notification-toast-container {
++		animation: none;
++	}
++}
+diff --git a/src/vs/workbench/browser/style.ts b/src/vs/workbench/browser/style.ts
+index 9250ef3f..4b2ae3ed 100644
+--- a/src/vs/workbench/browser/style.ts
++++ b/src/vs/workbench/browser/style.ts
+@@ -4,6 +4,7 @@
+  *--------------------------------------------------------------------------------------------*/
+ 
+ import './media/style.css';
++import './media/cinder.css';
+ import { registerThemingParticipant } from '../../platform/theme/common/themeService.js';
+ import { WORKBENCH_BACKGROUND, TITLE_BAR_ACTIVE_BACKGROUND } from '../common/theme.js';
+ import { isWeb, isIOS } from '../../base/common/platform.js';

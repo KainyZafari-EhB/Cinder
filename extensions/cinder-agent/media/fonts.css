@@ -1,0 +1,17 @@
+/* Bricolage Grotesque and JetBrains Mono, both SIL Open Font License 1.1. */
+@font-face {
+	font-family: 'Bricolage Grotesque';
+	font-style: normal;
+	font-display: swap;
+	font-weight: 200 800;
+	font-stretch: 75% 100%;
+	src: url('./fonts/BricolageGrotesque.woff2') format('woff2-variations');
+}
+
+@font-face {
+	font-family: 'JetBrains Mono';
+	font-style: normal;
+	font-display: swap;
+	font-weight: 100 800;
+	src: url('./fonts/JetBrainsMono.woff2') format('woff2-variations');
+}

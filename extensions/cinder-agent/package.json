@@ -1,0 +1,147 @@
+{
+	"name": "cinder-agent",
+	"displayName": "Cinder Agent",
+	"description": "Conversation-first coding with Claude: your conversations, their projects, and every change Claude makes, in one place.",
+	"version": "0.1.0",
+	"publisher": "cinder",
+	"license": "MIT",
+	"private": true,
+	"engines": {
+		"vscode": "^1.140.0"
+	},
+	"main": "./dist/extension.js",
+	"activationEvents": [
+		"onStartupFinished"
+	],
+	"capabilities": {
+		"untrustedWorkspaces": {
+			"supported": false,
+			"description": "Claude can read files and run commands in the project, so Cinder only runs in trusted folders."
+		}
+	},
+	"contributes": {
+		"viewsContainers": {
+			"secondarySidebar": [
+				{
+					"id": "cinder",
+					"title": "Claude Agent",
+					"icon": "media/mark.svg"
+				}
+			]
+		},
+		"views": {
+			"cinder": [
+				{
+					"type": "webview",
+					"id": "cinder.chat",
+					"name": "Conversation"
+				}
+			]
+		},
+		"commands": [
+			{
+				"command": "cinder.home",
+				"title": "Show Home",
+				"category": "Cinder",
+				"icon": "$(home)"
+			},
+			{
+				"command": "cinder.newConversation",
+				"title": "New Conversation",
+				"category": "Cinder",
+				"icon": "$(add)"
+			},
+			{
+				"command": "cinder.setApiKey",
+				"title": "Set Anthropic API Key",
+				"category": "Cinder"
+			},
+			{
+				"command": "cinder.clearApiKey",
+				"title": "Remove Anthropic API Key",
+				"category": "Cinder"
+			}
+		],
+		"menus": {
+			"view/title": [
+				{
+					"command": "cinder.newConversation",
+					"when": "view == cinder.chat",
+					"group": "navigation@1"
+				},
+				{
+					"command": "cinder.home",
+					"when": "view == cinder.chat",
+					"group": "navigation@2"
+				}
+			]
+		},
+		"keybindings": [
+			{
+				"command": "cinder.home",
+				"key": "ctrl+alt+h",
+				"mac": "cmd+alt+h"
+			},
+			{
+				"command": "cinder.newConversation",
+				"key": "ctrl+alt+n",
+				"mac": "cmd+alt+n"
+			}
+		],
+		"configuration": {
+			"title": "Cinder",
+			"properties": {
+				"cinder.model": {
+					"type": "string",
+					"default": "",
+					"markdownDescription": "Claude model to use, for example `claude-opus-5-5`. Leave empty to use the default model."
+				},
+				"cinder.reviewEdits": {
+					"type": "boolean",
+					"default": true,
+					"description": "Open a diff for every file Claude changes, so you can keep or undo it."
+				},
+				"cinder.openHomeOnStartup": {
+					"type": "boolean",
+					"default": true,
+					"description": "Show the Cinder home screen when a window opens without a project."
+				}
+			}
+		},
+		"configurationDefaults": {
+			"chat.disableAIFeatures": true,
+			"workbench.startupEditor": "none",
+			"workbench.secondarySideBar.defaultVisibility": "visibleInWorkspace",
+			"workbench.tips.enabled": false,
+			"workbench.layoutControl.enabled": false,
+			"workbench.editor.empty.hint": "hidden",
+			"editor.fontFamily": "'JetBrains Mono', 'Droid Sans Mono', monospace",
+			"editor.cursorSmoothCaretAnimation": "on",
+			"editor.smoothScrolling": true,
+			"workbench.list.smoothScrolling": true,
+			"terminal.integrated.smoothScrolling": true,
+			"editor.cursorBlinking": "phase"
+		}
+	},
+	"scripts": {
+		"build": "node esbuild.mjs",
+		"watch": "node esbuild.mjs --watch",
+		"typecheck": "tsc --noEmit -p . && tsc --noEmit -p webview",
+		"test": "vitest run",
+		"test:smoke": "CINDER_SMOKE=1 vitest run"
+	},
+	"dependencies": {
+		"@anthropic-ai/claude-agent-sdk": "0.3.306"
+	},
+	"devDependencies": {
+		"@fontsource-variable/bricolage-grotesque": "^5.3.0",
+		"@fontsource-variable/jetbrains-mono": "^5.3.0",
+		"@types/node": "^22.0.0",
+		"@types/vscode": "~1.140.0",
+		"dompurify": "^3.4.17",
+		"esbuild": "^0.28.2",
+		"marked": "^18.1.1",
+		"typescript": "^7.0.2",
+		"vitest": "^5.0.5"
+	}
+}
